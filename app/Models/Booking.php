@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Booking extends Model
 {
@@ -15,21 +14,21 @@ class Booking extends Model
         'service_id',
         'booking_date',
         'status',
+        'taken_by_user_id',
     ];
 
-    public function takenBy()
+    public function service()
     {
-        return $this->belongsTo(User::class, 'taken_by_user_id');
+        return $this->belongsTo(Service::class);
     }
 
-
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function service(): BelongsTo
+    public function takenBy()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsTo(User::class, 'taken_by_user_id');
     }
 }
