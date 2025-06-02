@@ -40,6 +40,14 @@ class UserResource extends Resource
     {
         return static::canViewNavigation();
     }
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['id', 'name', 'email', 'roles.name'];
+    }
+    public static function isGloballySearchable(): bool
+    {
+        return true;
+    }
 
 
     public static function form(Form $form): Form
@@ -107,7 +115,7 @@ class UserResource extends Resource
                     ->label('Активний'),
                 TextColumn::make('roles.name')
                     ->label('Ролі')
-                    ->toggleable(),
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Створено')
                     ->dateTime('d.m.Y H:i'),
@@ -115,6 +123,7 @@ class UserResource extends Resource
             ->filters([
                 // додайте фільтри за потреби
             ])
+            ->defaultSort('created_at', 'desc')
             ->actions([
                 EditAction::make(),
             ])

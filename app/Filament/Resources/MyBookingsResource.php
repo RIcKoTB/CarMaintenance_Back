@@ -9,6 +9,7 @@ use App\Filament\Resources\MyBookingsResource\Pages;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
+use Filament\Tables\Filters\SelectFilter;
 
 class MyBookingsResource extends Resource
 {
@@ -31,10 +32,34 @@ class MyBookingsResource extends Resource
         return $table
             ->query(fn () => Booking::query()->where('taken_by_user_id', auth()->id()))
             ->columns([
-                TextColumn::make('service.title')->label('Послуга'),
-                TextColumn::make('booking_date')->label('Дата')->dateTime('d.m.Y H:i'),
-                TextColumn::make('status')->label('Статус')->badge(),
+                TextColumn::make('service.title')
+                    ->label('Послуга')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('booking_date')
+                    ->label('Дата')
+                    ->dateTime('d.m.Y H:i')
+                    ->sortable(),
+
+                TextColumn::make('status')
+                    ->label('Статус')
+                    ->badge()
+                    ->searchable()
+                    ->sortable(),
             ])
+            ->filters([
+                SelectFilter::make('status')
+                    ->label('Статус')
+                    ->options(fn () => Booking::query()
+                        ->select('status')
+                        ->distinct()
+                        ->pluck('status', 'status')
+                        ->toArray()
+                    )
+                    ->native(false),
+            ])
+            ->defaultSort('booking_date', 'desc')
             ->actions([
                 Action::make('mark_done')
                     ->label('Виконано')
